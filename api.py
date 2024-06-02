@@ -12,8 +12,8 @@ def get_employee_schedule(api_url, uid):
                 print("Employee does not exist.")
                 return None
             else:
-
                 return {
+                    "employee_name": data["schedule"]["employee_name"],
                     "employee_flexibility": data["schedule"]["employee_flexibility"],
                     "starttime":datetime.combine(datetime.today(), datetime.strptime(data["schedule"]["starttime"], "%H:%M:%S").time())  ,
                     "endtime":datetime.combine(datetime.today(), datetime.strptime(data["schedule"]["endtime"], "%H:%M:%S").time())  ,
@@ -27,4 +27,30 @@ def get_employee_schedule(api_url, uid):
     except requests.RequestException as e:
         # Handle any request exceptions
         print(f"Request error: {e}")
+        return None
+    
+
+def create_clockin(api_url, uid, overtime=False):
+    payload = {"uid": uid, "overtime": overtime, "time": datetime.now().strftime("%H:%M:%S")}
+    try:
+        res = requests.post(api_url, json=payload)
+        if res.status_code == 200:
+            return True
+            
+    except requests.RequestException as e:
+        print(e)
+        return None
+    
+
+def create_clockout(api_url, uid, overtime=False):
+    payload = {"uid": uid, "overtime": overtime, "time": datetime.now().strftime("%H:%M:%S")}
+    try:
+        res = requests.post(api_url, json=payload)
+        if res.status_code == 200:
+            return True
+        else:
+            return False        
+    
+    except requests.RequestException as e:
+        print(e)
         return None
